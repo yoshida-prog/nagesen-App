@@ -1,39 +1,31 @@
 <template>
-  <div class="signup">
-    <h2>新規登録</h2>
-    <input type="text" placeholder="Username" v-model="updateUsername">
-    <input type="text" placeholder="Email" v-model="updateEmail">
-    <input type="password" placeholder="Password" v-model="updatePassword">
-    <button @click="signUp">登録する</button>
-  </div>
+<div class="signup">
+  <h2>新規登録</h2>
+  <input type="text" placeholder="Username" v-model="updateUsername">
+  <input type="text" placeholder="email" v-model="updateEmail">
+  <input type="password" placeholder="Password" v-model="updatePassword">
+  <button @click="signUp({email, password})">登録する</button>
+</div>
 </template>
 
 <script>
-import firebase from 'firebase'
-import { username, Email, password } from '../store/index.js'
+import { username, email, password } from '../store/index.js'
 import { mapGetters } from 'vuex'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'Signup',
   data () {
     return {
       username,
-      Email,
+      email,
       password
     }
   },
   methods: {
-    signUp() {
-      firebase
-      .auth()
-      .createUserWithEmailAndPassword(this.getEmail, this.getPassword)
-        .then(user => {
-          alert('Create account: ', user.email)
-        })
-        .catch(error => {
-          alert(error.message)
-        })
-    }
+    ...mapMutations([
+      'signUp'
+    ])
   },
   computed: {
     ...mapGetters([
@@ -70,7 +62,7 @@ export default {
 </script>
 
 <style scoped>
-input{
+input {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -81,12 +73,14 @@ input{
   border: none;
   border-bottom: 1.5px solid #1b2538;
 }
-input:focus{
+
+input:focus {
   border-bottom: 1.5px solid #da3c41;
   outline: none;
   transition: .5s;
 }
-button{
+
+button {
   color: #FFF;
   background-color: #1da1f3;
   border-radius: 20px;
@@ -97,10 +91,12 @@ button{
   font-size: 16px;
   border: none;
 }
-button:active{
+
+button:active {
   background-color: #36c;
 }
-button:focus{
+
+button:focus {
   outline: 0px;
 }
 </style>
