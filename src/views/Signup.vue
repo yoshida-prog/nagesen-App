@@ -11,11 +11,11 @@
 <script>
 import { username, email, password } from '../store/index.js'
 import { mapGetters } from 'vuex'
-import { mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Signup',
-  data () {
+  data() {
     return {
       username,
       email,
@@ -23,7 +23,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'signUp'
     ])
   },
@@ -34,31 +34,33 @@ export default {
       'getPassword'
     ]),
     updateUsername: {
-      get(){
+      get() {
         return this.getUsername
       },
-      set(value){
+      set(value) {
         this.$store.commit('updateUsername', value)
       }
     },
     updateEmail: {
-      get(){
+      get() {
         return this.getEmail
       },
-      set(value){
+      set(value) {
         this.$store.commit('updateEmail', value)
       }
     },
     updatePassword: {
-      get(){
+      get() {
         return this.getPassword
       },
-      set(value){
+      set(value) {
         this.$store.commit('updatePassword', value)
       }
     }
   }
 }
+
+
 </script>
 
 <style scoped>
