@@ -27,6 +27,17 @@ export default new Vuex.Store({
           alert(error.message)
         })
     },
+    signIn({ email, password }) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert('Success!')
+        })
+        .catch(error => {
+          alert(error.message)
+        })
+    },
     updateUsername(state, value) {
       state.username = value
     },
@@ -41,6 +52,9 @@ export default new Vuex.Store({
     signUp(context, { email, password }) {
       context.commit('signUp', { email, password })
     },
+    signIn(context, { email, password }) {
+      context.commit('signIn', { email, password })
+    }
   },
   modules: {}
 })
