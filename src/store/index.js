@@ -27,8 +27,8 @@ export default new Vuex.Store({
           alert(error.message)
         })
     },
-    updateUsername(state, username) {
-      state.username = username
+    updateUsername(state, value) {
+      state.username = value
     },
     updateEmail(state, value) {
       state.email = value
@@ -37,6 +37,10 @@ export default new Vuex.Store({
       state.password = value
     }
   },
-  actions: {},
+  actions: {
+    signUp(context, { email, password }) {
+      context.commit('signUp', { email, password })
+    },
+  },
   modules: {}
 })
