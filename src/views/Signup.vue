@@ -4,7 +4,7 @@
   <input type="text" placeholder="Username" v-model="updateUsername">
   <input type="text" placeholder="email" v-model="updateEmail">
   <input type="password" placeholder="Password" v-model="updatePassword">
-  <button @click="signUp({email: getEmail, password: getPassword})">登録する</button>
+  <button @click="signUp({username: getUsername, email: getEmail, password: getPassword})">登録する</button>
 </div>
 </template>
 
