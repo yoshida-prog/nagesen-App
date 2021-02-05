@@ -1,46 +1,38 @@
 <template>
-<div class="signup">
-  <h2>新規登録</h2>
-  <input type="text" placeholder="Username" v-model="updateUsername">
+<div class="signin">
+  <h2>ログイン</h2>
   <input type="text" placeholder="email" v-model="updateEmail">
   <input type="password" placeholder="Password" v-model="updatePassword">
-  <button @click="signUp({email: getEmail, password: getPassword})">登録する</button>
+  <button @click="signIn({email: getEmail, password: getPassword})">ログイン</button>
+  <div>
+    <router-link to="/signup" class="link"><span>アカウント作成はこちら</span></router-link>
+  </div>
 </div>
 </template>
 
 <script>
-import { username, email, password } from '../store/index.js'
-import { mapGetters } from 'vuex'
+import { email, password } from '../store/index.js'
+import { mapGetters}  from 'vuex'
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'Signup',
+  name: 'Signin',
   data() {
     return {
-      username,
       email,
       password
     }
   },
   methods: {
     ...mapActions([
-      'signUp'
+      'signIn'
     ])
   },
   computed: {
     ...mapGetters([
-      'getUsername',
       'getEmail',
       'getPassword'
     ]),
-    updateUsername: {
-      get() {
-        return this.getUsername
-      },
-      set(value) {
-        this.$store.commit('updateUsername', value)
-      }
-    },
     updateEmail: {
       get() {
         return this.getEmail
@@ -100,5 +92,10 @@ button:active {
 
 button:focus {
   outline: 0px;
+}
+
+.link {
+  color: #1da1f3;
+  text-decoration: none;
 }
 </style>
