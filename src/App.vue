@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <h1>投げ銭アプリ</h1>
     <div id="nav">
 
     </div>
