@@ -12,7 +12,7 @@
 
 <script>
 import { email, password } from '../store/index.js'
-import { mapGetters}  from 'vuex'
+import { mapGetters }  from 'vuex'
 import { mapActions } from 'vuex'
 
 export default {
