@@ -3,7 +3,7 @@
   <h2>ログイン</h2>
   <input type="text" placeholder="email" v-model="updateEmail">
   <input type="password" placeholder="Password" v-model="updatePassword">
-  <button @click="signIn({email, password})">ログイン</button>
+  <button @click="signIn({email: getEmail, password: getPassword})">ログイン</button>
   <div>
     <router-link to="/signup" class="link"><span>アカウント作成はこちら</span></router-link>
   </div>
