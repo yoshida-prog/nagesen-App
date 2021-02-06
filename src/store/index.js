@@ -20,9 +20,8 @@ export default new Vuex.Store({
     getBalance: state => state.balance
   },
   mutations: {
-    rootingDashboard(state, { username, userId }) {
-      state.username = username
-      router.push({ name: 'Dashboard', params: { userId: userId } })
+    rootingDashboard() {
+      router.push({ name: 'Dashboard' })
     },
     loginError(state, error) {
       alert(error)
@@ -40,7 +39,7 @@ export default new Vuex.Store({
     updatePassword(state, value) {
       state.password = value
     },
-    logOut(state){
+    logOut(state) {
       state.username = '',
       state.email = '',
       state.password = '',
@@ -55,11 +54,16 @@ export default new Vuex.Store({
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(function(user) {
-          db.collection('users').doc(user.user.uid).set({
+          const userInfo = firebase.auth().currentUser
+          userInfo.updateProfile({
+            displayName: username
+          })
+          db.collection('users').doc().set({
             name: username,
-            balance: 1000
+            balance: 1000,
+            uid: user.user.uid
           }).then(() => {
-            commit('rootingDashboard', { username: username, userId: user.user.uid })
+            commit('rootingDashboard')
           }).catch((error) => {
             console.error('Error adding document: ', error)
           })
@@ -70,21 +74,18 @@ export default new Vuex.Store({
       firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
-        .then(function(user){
-          db.collection('users').doc(user.user.uid).get()
-            .then((doc) => {
-              commit('rootingDashboard', { username: doc.data().name, userId: doc.id })
-            })
-            .catch(error => {
-              console.log('Error adding document: ', error)
-            })
+        .then(function(){
+          commit('rootingDashboard')
         })
         .catch(error => commit('loginError', error.message))
     },
-    getUserDB({ commit }, userid){
-      db.collection('users').doc(userid).get()
-        .then((doc) => {
-          commit('setUserData', doc.data())
+    getUserDB({ commit }) {
+      const uid = firebase.auth().currentUser.uid
+      db.collection('users').where('uid', '==', uid).get()
+        .then((docs) => {
+          docs.forEach((doc) => {
+            commit('setUserData', doc.data())
+          })
         })
         .catch(error => {
           console.log('Error adding document: ', error)
