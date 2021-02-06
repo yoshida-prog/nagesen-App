@@ -8,7 +8,6 @@
     <span>残高: {{ getBalance }}</span>
   </div>
   <h2>ユーザー一覧</h2>
-
 </div>
 </template>
 
@@ -16,6 +15,7 @@
 import { username, email, password, balance } from '../store/index.js'
 import { mapGetters } from 'vuex'
 import { mapMutations } from 'vuex'
+import firebase from 'firebase'
 
 export default {
   name: 'Dashboard',
@@ -32,10 +32,12 @@ export default {
       'logOut'
     ])
   },
-  created(){
-    const path = this.$route.path.split('/')
-    const userid = path[2]
-    this.$store.dispatch('getUserDB', userid)
+  created() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch('getUserDB')
+      }
+    })
   },
   computed: {
     ...mapGetters([
