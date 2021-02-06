@@ -19,7 +19,7 @@ const routes = [
     component: Signup
   },
   {
-    path: '/dashboard/:userId',
+    path: '/dashboard',
     name: 'Dashboard',
     component: Dashboard,
     meta: {
