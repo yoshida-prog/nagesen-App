@@ -8,6 +8,8 @@ import { firebaseConfig } from './firebase/config'
 Vue.config.productionTip = false
 
 firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore()
+export default db
 
 new Vue({
   router,
