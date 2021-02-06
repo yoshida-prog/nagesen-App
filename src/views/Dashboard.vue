@@ -1,7 +1,7 @@
 <template>
 <div class="dashboard">
   <div class="logOut">
-    <button>ログアウト</button>
+    <button @click="logOut">ログアウト</button>
   </div>
   <div class="userInfo">
     <span>ようこそ{{ getUsername }}さん</span>
@@ -15,6 +15,7 @@
 <script>
 import { username, email, password, balance } from '../store/index.js'
 import { mapGetters } from 'vuex'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'Dashboard',
@@ -27,7 +28,9 @@ export default {
     }
   },
   methods: {
-
+    ...mapMutations([
+      'logOut'
+    ])
   },
   created(){
     const path = this.$route.path.split('/')
@@ -37,8 +40,6 @@ export default {
   computed: {
     ...mapGetters([
       'getUsername',
-      'getEmail',
-      'getPassword',
       'getBalance'
     ])
   }
