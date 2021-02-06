@@ -39,14 +39,6 @@ export default new Vuex.Store({
     },
     updatePassword(state, value) {
       state.password = value
-    },
-    logOut(state){
-      state.username = '',
-      state.email = '',
-      state.password = '',
-      state.balance = ''
-      firebase.auth().signOut()
-      router.push({ name: 'Signin' })
     }
   },
   actions: {
