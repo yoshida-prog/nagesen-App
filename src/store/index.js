@@ -11,13 +11,21 @@ export default new Vuex.Store({
     username: '',
     email: '',
     password: '',
-    balance: ''
+    balance: '',
+    usersData: [],
+    isName: '',
+    isBalance: '',
+    popupFlg: false
   },
   getters: {
     getUsername: state => state.username,
     getEmail: state => state.email,
     getPassword: state => state.password,
-    getBalance: state => state.balance
+    getBalance: state => state.balance,
+    getUsersData: state => state.usersData,
+    getIsName: state => state.isName,
+    getIsBalance: state => state.isBalance,
+    getIsPopupFlg: state => state.popupFlg
   },
   mutations: {
     rootingDashboard() {
@@ -29,6 +37,12 @@ export default new Vuex.Store({
     setUserData(state, userData) {
       state.username = userData.name
       state.balance = userData.balance
+    },
+    setAllUserDB(state, usersDB){
+      state.usersData.push({
+        name: usersDB.name,
+        balance: usersDB.balance
+      })
     },
     updateUsername(state, value) {
       state.username = value
@@ -46,6 +60,14 @@ export default new Vuex.Store({
       state.balance = ''
       firebase.auth().signOut()
       router.push({ name: 'Signin' })
+    },
+    checkBalance(state) {
+      state.isName = event.currentTarget.getAttribute('data-name')
+      state.isBalance = event.currentTarget.getAttribute('data-balance')
+      state.popupFlg = true
+    },
+    closePopup(state) {
+      state.popupFlg = false
     }
   },
   actions: {
@@ -90,6 +112,13 @@ export default new Vuex.Store({
         .catch(error => {
           console.log('Error adding document: ', error)
         })
+    },
+    getAllUserDB({ commit }) {
+      db.collection('users').get().then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          commit('setAllUserDB', doc.data())
+        })
+      })
     }
   },
   modules: {}
