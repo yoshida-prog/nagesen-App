@@ -68,10 +68,14 @@ export default {
     ])
   },
   created() {
+    let authFlg = true //onAuthStateChangedが2度実行されることを防ぐためフラグを建てる
     firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.$store.dispatch('getUserDB')
-        this.$store.dispatch('getAllUserDB')
+      if(authFlg) {
+        authFlg = false //一度実行されればfalseになるので2度実行されることはない
+        if (user) {
+          this.$store.dispatch('getUserDB')
+          this.$store.dispatch('getAllUserDB')
+        }
       }
     })
   },
@@ -86,7 +90,6 @@ export default {
     ])
   }
 }
-
 
 </script>
 
