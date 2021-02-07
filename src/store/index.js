@@ -54,12 +54,13 @@ export default new Vuex.Store({
       state.password = value
     },
     logOut(state) {
-      state.username = '',
-      state.email = '',
-      state.password = '',
+      state.username = ''
+      state.email = ''
+      state.password = ''
       state.balance = ''
-      firebase.auth().signOut()
+      state.usersData = []
       router.push({ name: 'Signin' })
+      firebase.auth().signOut()
     },
     checkBalance(state) {
       state.isName = event.currentTarget.getAttribute('data-name')
