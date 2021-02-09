@@ -9,34 +9,38 @@
   </div>
   <h2>ユーザー一覧</h2>
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~残高確認画面モーダル~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <div class="modal" v-if="getIsCheckBalancePopupFlg">
-    <div class="modalContainer">
-      <div class="modalTextContainer">
-        <h3 class="modalUserName">{{ getIsName }}さんの残高</h3>
-        <p class="modalBalance">{{ getIsBalance }}</p>
-      </div>
-      <div class="modalBtnContainer">
-        <button class="modalBtn" @click="closePopup">閉じる</button>
-      </div>
-    </div>
-  </div>
-  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~送金画面モーダル~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <div class="modal" v-if="getIsSendMoneyPopupFlg">
-    <div class="modalContainer">
-      <div class="modalTextContainer">
-        <div class="modalText">
-          <span class="modalBalance">あなたの残高: {{ getBalance }}</span><br>
-          <span>送る金額</span>
-          <input type="text" v-model="$store.state.transfer">
+  <transition>
+    <div class="modal" v-if="getIsCheckBalancePopupFlg">
+      <div class="modalContainer">
+        <div class="modalTextContainer">
+          <h3 class="modalUserName">{{ getIsName }}さんの残高</h3>
+          <p class="modalBalance">{{ getIsBalance }}</p>
+        </div>
+        <div class="modalBtnContainer">
+          <button class="modalBtn" @click="closePopup">閉じる</button>
         </div>
       </div>
-      <div class="modalBtnContainer">
-        <button class="modalBtn modalSendBtn" @click="send(getTransfer)">送る</button>
-        <button class="modalBtn" @click="closePopup">閉じる</button>
+    </div>
+  </transition>
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~送金画面モーダル~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <transition>
+    <div class="modal" v-if="getIsSendMoneyPopupFlg">
+      <div class="modalContainer">
+        <div class="modalTextContainer">
+          <div class="modalText">
+            <span class="modalBalance">あなたの残高: {{ getBalance }}</span><br>
+            <span>送る金額</span>
+            <input type="text" v-model="$store.state.transfer">
+          </div>
+        </div>
+        <div class="modalBtnContainer">
+          <button class="modalBtn modalSendBtn" @click="send(getTransfer)">送る</button>
+          <button class="modalBtn" @click="closePopup">閉じる</button>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <table>
     <thead>
@@ -91,10 +95,10 @@ export default {
     send(getTransfer) {
       if(getTransfer.match(/^([1-9]\d*|0)$/)) {
         this.$store.dispatch('updateUserBalance', getTransfer)
-
       } else {
         alert('0以上の整数で入力してください')
       }
+        this.$store.commit('resetSendForm')
     },
     checkMyDB(userDB) {
       if(userDB.name === this.getUsername) {
@@ -192,16 +196,32 @@ table {
   font-size: 16px;
 }
 
+.v-enter {
+  opacity: 0;
+}
+
+.v-enter-active {
+  transition: opacity 300ms ease-out;
+}
+
+.v-leave-to {
+  opacity: 0;
+}
+
+.v-leave-active {
+  transition: opacity 300ms ease-out;
+}
+
 .modal {
   display: flex;
   align-items: center;
   justify-content: center;
   position: fixed;
-  z-index: 30;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 30;
   background: rgba(0, 0, 0, 0.5);
 }
 
