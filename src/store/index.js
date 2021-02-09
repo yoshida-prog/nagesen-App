@@ -52,6 +52,9 @@ export default new Vuex.Store({
         uid: usersDB.uid
       })
     },
+    resetSendForm(state) {
+      state.transfer = null
+    },
     updateUsername(state, value) {
       state.username = value
     },
