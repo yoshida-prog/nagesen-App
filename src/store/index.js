@@ -12,20 +12,27 @@ export default new Vuex.Store({
     email: '',
     password: '',
     balance: '',
+    transfer: '',
     usersData: [],
+    sendBoxIndex: null,
     isName: '',
     isBalance: '',
-    popupFlg: false
+    isUid: '',
+    checkBalancePopupFlg: false,
+    sendMoneypopupFlg: false
   },
   getters: {
     getUsername: state => state.username,
     getEmail: state => state.email,
     getPassword: state => state.password,
     getBalance: state => state.balance,
+    getTransfer: state => state.transfer,
     getUsersData: state => state.usersData,
+    getSendBoxIndex: state => state.sendBoxIndex,
     getIsName: state => state.isName,
     getIsBalance: state => state.isBalance,
-    getIsPopupFlg: state => state.popupFlg
+    getIsCheckBalancePopupFlg: state => state.checkBalancePopupFlg,
+    getIsSendMoneyPopupFlg: state => state.sendMoneypopupFlg
   },
   mutations: {
     rootingDashboard() {
@@ -41,7 +48,8 @@ export default new Vuex.Store({
     setAllUserDB(state, usersDB){
       state.usersData.push({
         name: usersDB.name,
-        balance: usersDB.balance
+        balance: usersDB.balance,
+        uid: usersDB.uid
       })
     },
     updateUsername(state, value) {
@@ -52,6 +60,12 @@ export default new Vuex.Store({
     },
     updatePassword(state, value) {
       state.password = value
+    },
+    updateMyBalance(state, getTransfer) {
+      state.balance = state.balance - getTransfer
+    },
+    updateDestinationBalance(state, getTransfer) {
+      state.usersData[state.sendBoxIndex].balance += Number(getTransfer)
     },
     logOut(state) {
       state.username = ''
@@ -65,10 +79,17 @@ export default new Vuex.Store({
     checkBalance(state) {
       state.isName = event.currentTarget.getAttribute('data-name')
       state.isBalance = event.currentTarget.getAttribute('data-balance')
-      state.popupFlg = true
+      state.checkBalancePopupFlg = true
+    },
+    sendMoney(state) {
+      state.isUid = event.currentTarget.getAttribute('data-uid')
+      state.isBalance = event.currentTarget.getAttribute('data-balance')
+      state.sendBoxIndex = event.currentTarget.getAttribute('data-index')
+      state.sendMoneypopupFlg = true
     },
     closePopup(state) {
-      state.popupFlg = false
+      state.checkBalancePopupFlg = false,
+      state.sendMoneypopupFlg = false
     }
   },
   actions: {
@@ -120,6 +141,33 @@ export default new Vuex.Store({
           commit('setAllUserDB', doc.data())
         })
       })
+    },
+    updateUserBalance({ state, commit }, getTransfer) {
+      const isMyUid = firebase.auth().currentUser.uid
+      db.collection('users').where('uid', '==', state.isUid).get()
+        .then((docs) => {
+          docs.forEach((doc) => {
+            db.collection('users').doc(doc.id).update({
+              balance: Number(state.isBalance) + Number(getTransfer)
+            })
+          })
+          commit('updateDestinationBalance', getTransfer)
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
+      db.collection('users').where('uid', '==', isMyUid).get()
+        .then((docs) => {
+          docs.forEach((doc) => {
+            db.collection('users').doc(doc.id).update({
+              balance: Number(state.balance) - Number(getTransfer)
+            })
+          })
+          commit('updateMyBalance', getTransfer)
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
     }
   },
   modules: {}
