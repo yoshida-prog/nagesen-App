@@ -146,31 +146,37 @@ export default new Vuex.Store({
       })
     },
     updateUserBalance({ state, commit }, getTransfer) {
-      const isMyUid = firebase.auth().currentUser.uid
-      db.collection('users').where('uid', '==', state.isUid).get()
-        .then((docs) => {
+      //const isMyUid = firebase.auth().currentUser.uid
+      var isUidRef = db.collection('users').where('uid', '==', state.isUid)
+      //var isMyUidRef = db.collection('users').where('uid', '==', isMyUid)
+      db.runTransaction((transaction) => {
+        console.log(transaction)
+        // return transaction.get(isUidRef).then((docs) => {
+        return isUidRef.get().then((docs) => {
           docs.forEach((doc) => {
             db.collection('users').doc(doc.id).update({
               balance: Number(state.isBalance) + Number(getTransfer)
             })
           })
           commit('updateDestinationBalance', getTransfer)
-        })
-        .catch(function(error) {
+        }).catch(error => {
           console.log(error)
         })
-      db.collection('users').where('uid', '==', isMyUid).get()
-        .then((docs) => {
-          docs.forEach((doc) => {
-            db.collection('users').doc(doc.id).update({
-              balance: Number(state.balance) - Number(getTransfer)
-            })
-          })
-          commit('updateMyBalance', getTransfer)
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
+        // return isMyUidRef.get().then((docs) => {
+        //   docs.forEach((doc) => {
+        //     db.collection('users').doc(doc.id).update({
+        //       balance: Number(state.balance) - Number(getTransfer)
+        //     })
+        //   })
+        //   commit('updateMyBalance', getTransfer)
+        // }).catch(function(error) {
+        //   console.log(error)
+        // })
+      }).then(() => {
+        console.log('ok')
+      }).catch((error) => {
+        console.log(error)
+      })
     }
   },
   modules: {}
