@@ -8,18 +8,39 @@
     <span>残高: {{ getBalance }}</span>
   </div>
   <h2>ユーザー一覧</h2>
-  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~モーダル~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <div class="modal" v-if="getIsPopupFlg">
-    <div class="modalContainer">
-      <div class="modalTextContainer">
-        <h3 class="modalUserName">{{ getIsName }}さんの残高</h3>
-        <p class="modalBalance">{{ getIsBalance }}</p>
-      </div>
-      <div class="modalBtnContainer">
-        <button class="modalBtn" @click="closePopup">閉じる</button>
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~残高確認画面モーダル~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <transition>
+    <div class="modal" v-if="getIsCheckBalancePopupFlg">
+      <div class="modalContainer">
+        <div class="modalTextContainer">
+          <h3 class="modalUserName">{{ getIsName }}さんの残高</h3>
+          <p class="modalBalance">{{ getIsBalance }}</p>
+        </div>
+        <div class="modalBtnContainer">
+          <button class="modalBtn" @click="closePopup">閉じる</button>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~送金画面モーダル~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <transition>
+    <div class="modal" v-if="getIsSendMoneyPopupFlg">
+      <div class="modalContainer">
+        <div class="modalTextContainer">
+          <div class="modalText">
+            <span class="modalBalance">あなたの残高: {{ getBalance }}</span><br>
+            <span>送る金額</span>
+            <input type="text" v-model="$store.state.transfer">
+          </div>
+        </div>
+        <div class="modalBtnContainer">
+          <button class="modalBtn modalSendBtn" @click="send(getTransfer)">送る</button>
+          <button class="modalBtn" @click="closePopup">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </transition>
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <table>
     <thead>
@@ -32,8 +53,8 @@
     <tbody>
       <tr v-for="(userDB, index) in getUsersData" :key="index">
         <td class="leftHead">{{ userDB.name }}</td>
-        <td><button class="dashBoardBtn" :data-balance="userDB.balance" :data-name="userDB.name" @click="checkBalance()">残高を見る</button></td>
-        <td><button class="dashBoardBtn" :data="userDB.balance">送る</button></td>
+        <td class="rightHead"><button class="dashBoardBtn" :data-balance="userDB.balance" :data-name="userDB.name" @click="checkBalance()" v-if="checkMyDB(userDB)">残高を見る</button></td>
+        <td class="rightHead"><button class="dashBoardBtn" :data-uid="userDB.uid" :data-balance="userDB.balance" :data-index="index" @click="sendMoney" v-if="checkMyDB(userDB)">送る</button></td>
       </tr>
     </tbody>
   </table>
@@ -41,7 +62,7 @@
 </template>
 
 <script>
-import { username, email, password, balance, usersData, isName, isBalance, popupFlg } from '../store/index.js'
+import { username, email, password, balance, transfer, usersData, sendBoxIndex, isName, isBalance, isUid, checkBalancePopupFlg, sendMoneypopupFlg } from '../store/index.js'
 import { mapGetters } from 'vuex'
 import { mapMutations } from 'vuex'
 import firebase from 'firebase'
@@ -54,25 +75,45 @@ export default {
       email,
       password,
       balance,
+      transfer,
       usersData,
+      sendBoxIndex,
       isName,
       isBalance,
-      popupFlg
+      isUid,
+      checkBalancePopupFlg,
+      sendMoneypopupFlg
     }
   },
   methods: {
     ...mapMutations([
       'logOut',
       'checkBalance',
+      'sendMoney',
       'closePopup'
-    ])
+    ]),
+    send(getTransfer) {
+      if(getTransfer.match(/^([1-9]\d*|0)$/)) {
+        this.$store.dispatch('updateUserBalance', getTransfer)
+      } else {
+        alert('0以上の整数で入力してください')
+      }
+        this.$store.commit('resetSendForm')
+    },
+    checkMyDB(userDB) {
+      if(userDB.name === this.getUsername) {
+        return false
+      } else {
+        return true
+      }
+    }
   },
   created() {
     let authFlg = true //onAuthStateChangedが2度実行されることを防ぐためフラグを建てる
     firebase.auth().onAuthStateChanged((user) => {
       if(authFlg) {
         authFlg = false //一度実行されればfalseになるので2度実行されることはない
-        if (user) {
+        if(user) {
           this.$store.dispatch('getUserDB')
           this.$store.dispatch('getAllUserDB')
         }
@@ -84,9 +125,12 @@ export default {
       'getUsername',
       'getBalance',
       'getUsersData',
+      'getSendBoxIndex',
       'getIsName',
       'getIsBalance',
-      'getIsPopupFlg'
+      'getTransfer',
+      'getIsCheckBalancePopupFlg',
+      'getIsSendMoneyPopupFlg'
     ])
   }
 }
@@ -136,12 +180,14 @@ table {
 
 .leftHead {
   width: 200px;
+  height: 30px;
   float: left;
   text-align: center;
 }
 
 .rightHead {
   width: 120px;
+  height: 30px;
 }
 
 .dashBoardBtn {
@@ -150,16 +196,32 @@ table {
   font-size: 16px;
 }
 
+.v-enter {
+  opacity: 0;
+}
+
+.v-enter-active {
+  transition: opacity 300ms ease-out;
+}
+
+.v-leave-to {
+  opacity: 0;
+}
+
+.v-leave-active {
+  transition: opacity 300ms ease-out;
+}
+
 .modal {
   display: flex;
   align-items: center;
   justify-content: center;
   position: fixed;
-  z-index: 30;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 30;
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -177,8 +239,13 @@ table {
   height: 60%;
 }
 
+.modalText {
+  margin-top: 1em;
+}
+
 .modalBtnContainer {
-  display: inline-block;
+  display: flex;
+  justify-content: space-evenly;
   position: relative;
   top: 108px;
   width: 100%;
@@ -198,6 +265,14 @@ table {
 
 .modalBtn:hover {
   background-color: #ff5341;
+}
+
+.modalSendBtn {
+  background-color: #1da1f3;
+}
+
+.modalSendBtn:hover {
+  background-color: #5fb1f1;
 }
 
 </style>
