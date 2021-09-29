@@ -1,24 +1,21 @@
 # Vue.jsとFirebaseを使った簡易投げ銭アプリ
 
+簡易的なSPAアプリケーションの学習のために作成しました。
+アカウント作成・ログイン後、任意の相手に手持ちの残高を分け与えられます。
+また、任意の相手の残高も確認ができます。
+
 ## ローカル環境にクローン
 ```
-git clone 
+git clone https://github.com/yoshida-prog/nagesen-App.git
 ```
 
-### Compiles and hot-reloads for development
+### npm install
 ```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
+npm install
 ```
 
-### Lints and fixes files
+### 起動
 ```
-yarn lint
+npm run serve
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+ブラウザからlocalhost:8080を呼び出したらアプリが起動できます。
