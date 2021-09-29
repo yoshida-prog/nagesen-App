@@ -1,8 +1,8 @@
-# base
+# Vue.jsとFirebaseを使った簡易投げ銭アプリ
 
-## Project setup
+## ローカル環境にクローン
 ```
-yarn install
+git clone 
 ```
 
 ### Compiles and hot-reloads for development
